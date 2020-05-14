@@ -30,7 +30,7 @@ public class CreateEdge implements Runnable {
                 point2 = (Point) map.get(randomNo[1]);
                 i++;
                 if (i == 20) {
-                    System.out.println("No matched point, cannot form edge");
+                    System.out.println(Thread.currentThread().getName()+"No matched point, cannot form edge");
                     validPair = false;
                     //exit
                 }

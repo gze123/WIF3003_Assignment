@@ -13,8 +13,6 @@ public class Main {
 
     public static void main(String[] args) {
         Map<Integer, Point> map = new HashMap<Integer, Point>();
-        Map<Point, Point> pairPoint = new HashMap<>();
-        Map<Point, Point> createEdge = new HashMap<>();
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter number of points you want to create, n: ");
@@ -25,16 +23,26 @@ public class Main {
         int m = scanner.nextInt();
         generateUniquePoint(n, map);
         System.out.println(map.toString());
-//        createEdge(map, pairPoint);
-//        System.out.println(pairPoint.toString());
-//        System.out.println(pairPoint.size());
-        ExecutorService executorService = Executors.newFixedThreadPool(t);
-        CreateEdge c1 = new CreateEdge(map);
-        Thread thread = new Thread(c1);
-        executorService.execute(thread);
-        executorService.shutdown();
-        while (!executorService.isTerminated()) {
+//        ExecutorService executorService = Executors.newFixedThreadPool(t);
+
+        Runnable runnable[] = new CreateEdge[t];
+        for (int i = 0; i < t; i++) {
+            runnable[i] = new CreateEdge(map);
         }
+
+        Thread thread[] = new Thread[t];
+        for (int i = 0; i < t; i++) {
+            thread[i] = new Thread(runnable[i]);
+        }
+
+        for (int i = 0; i < t; i++) {
+            thread[i].start();
+        }
+
+
+//        executorService.shutdown();
+//        while (!executorService.isTerminated()) {
+//        }
 
     }
 
