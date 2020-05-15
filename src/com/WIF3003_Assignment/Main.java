@@ -4,14 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 
 public class Main {
 
     private static final Random random = new Random();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
         Map<Integer, Point> map = new HashMap<Integer, Point>();
 
         Scanner scanner = new Scanner(System.in);
@@ -21,15 +23,12 @@ public class Main {
         int t = scanner.nextInt();
         System.out.print("Enter the time you want the program to run, m (in second): ");
         int m = scanner.nextInt();
-        generateUniquePoint(n, map);
-        System.out.println(map.toString());
-        ExecutorService executorService = Executors.newFixedThreadPool(t);
+        map = generateUniquePoint(n);
+        ExecutorService executorService = Executors.newFixedThreadPool(t/4);
 
-        MapAccess mapAccess = new MapAccess(map);
-
-        Runnable[] runnable = new MapWorker[t];
+        Runnable[] runnable = new MapAccess[t];
         for (int i = 0; i < t; i++) {
-            runnable[i] = new MapWorker(mapAccess);
+            runnable[i] = new MapAccess(map);
         }
 
         Thread[] thread = new Thread[t];
@@ -42,20 +41,22 @@ public class Main {
         }
 
 
-        executorService.shutdown();
-        while (!executorService.isTerminated()) {
-        }
+//        executorService.shutdown();
+//        while (!executorService.isTerminated()) {
+//        }
 
     }
 
-    private static void generateUniquePoint(int n, Map map) {
+    private static Map generateUniquePoint(int n) {
+        Map<Integer, Point> map = new HashMap<Integer, Point>();
         for (int i = 0; i < n; i++) {
             Point point = generateRandomPoint();
-            while (map.containsKey(point)) {
+            while (map.containsValue(point)) {
                 point = generateRandomPoint();
             }
             map.put(i, point);
         }
+        return map;
     }
 
     private static Point generateRandomPoint() {
