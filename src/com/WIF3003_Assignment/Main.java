@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
-    private static Random random = new Random();
+    private static final Random random = new Random();
 
     public static void main(String[] args) {
         Map<Integer, Point> map = new HashMap<Integer, Point>();
@@ -23,14 +23,16 @@ public class Main {
         int m = scanner.nextInt();
         generateUniquePoint(n, map);
         System.out.println(map.toString());
-//        ExecutorService executorService = Executors.newFixedThreadPool(t);
+        ExecutorService executorService = Executors.newFixedThreadPool(t);
 
-        Runnable runnable[] = new CreateEdge[t];
+        MapAccess mapAccess = new MapAccess(map);
+
+        Runnable[] runnable = new CreateEdge[t];
         for (int i = 0; i < t; i++) {
-            runnable[i] = new CreateEdge(map);
+            runnable[i] = new CreateEdge(mapAccess);
         }
 
-        Thread thread[] = new Thread[t];
+        Thread[] thread = new Thread[t];
         for (int i = 0; i < t; i++) {
             thread[i] = new Thread(runnable[i]);
         }
@@ -40,58 +42,11 @@ public class Main {
         }
 
 
-//        executorService.shutdown();
-//        while (!executorService.isTerminated()) {
-//        }
+        executorService.shutdown();
+        while (!executorService.isTerminated()) {
+        }
 
     }
-
-//    private static Map createEdge(Map map, Map pairPoint) {
-//        int MAP_SIZE = map.size();
-//        int i = 0;
-//        while (MAP_SIZE > i) {
-//            pairPoint = pairPoint(map, pairPoint);
-//            i++;
-//        }
-//        return pairPoint;
-//    }
-//
-//    private static Map pairPoint(Map map, Map pairPoint) {
-//        int[] randomNo = generateDifferentNumber(map.size());
-//        Point point1 = (Point) map.get(randomNo[0]);
-//        Point point2 = (Point) map.get(randomNo[1]);
-//        int i = 0;
-//        boolean validPair = true;
-//        while ((pairPoint.containsKey(point1) || pairPoint.containsKey(point2) ||
-//                pairPoint.containsValue(point1) || pairPoint.containsValue(point2)) &&
-//                (i<20) ) {
-//            randomNo = generateDifferentNumber(map.size());
-//            point1 = (Point) map.get(randomNo[0]);
-//            point2 = (Point) map.get(randomNo[1]);
-//            i++;
-//            if(i == 20){
-//                System.out.println("No matched point, cannot form edge");
-//                validPair = false;
-//                //exit
-//            }
-//        }
-//
-//        if(validPair) {
-//            System.out.println("["+point1.toString() +","+point2.toString()+"]");
-//            pairPoint.put(point1, point2);
-//        }
-//        return pairPoint;
-//    }
-//
-//    private static int[] generateDifferentNumber(int size) {
-//        int randomNo_1 = random.nextInt(size);
-//        int randomNo_2 = random.nextInt(size);
-//        while (randomNo_1 == randomNo_2) {
-//            randomNo_2 = random.nextInt(size);
-//        }
-//        int[] randomNo = {randomNo_1, randomNo_2};
-//        return randomNo;
-//    }
 
     private static void generateUniquePoint(int n, Map map) {
         for (int i = 0; i < n; i++) {
