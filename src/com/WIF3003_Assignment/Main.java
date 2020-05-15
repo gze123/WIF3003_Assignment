@@ -27,9 +27,9 @@ public class Main {
 
         MapAccess mapAccess = new MapAccess(map);
 
-        Runnable[] runnable = new CreateEdge[t];
+        Runnable[] runnable = new MapWorker[t];
         for (int i = 0; i < t; i++) {
-            runnable[i] = new CreateEdge(mapAccess);
+            runnable[i] = new MapWorker(mapAccess);
         }
 
         Thread[] thread = new Thread[t];

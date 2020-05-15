@@ -1,13 +1,10 @@
 package com.WIF3003_Assignment;
 
-import java.util.Random;
+public class MapWorker implements Runnable {
 
-public class CreateEdge implements Runnable {
-
-    private static final Random random = new Random();
     MapAccess mapAccess;
 
-    public CreateEdge(MapAccess mapAccess) {
+    public MapWorker(MapAccess mapAccess) {
         this.mapAccess = mapAccess;
     }
 
