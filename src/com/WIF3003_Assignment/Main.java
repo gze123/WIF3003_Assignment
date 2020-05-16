@@ -1,13 +1,7 @@
 package com.WIF3003_Assignment;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class Main {
 
@@ -24,26 +18,42 @@ public class Main {
         System.out.print("Enter the time you want the program to run, m (in second): ");
         int m = scanner.nextInt();
         map = generateUniquePoint(n);
-        ExecutorService executorService = Executors.newFixedThreadPool(t/4);
+        ExecutorService executorService = Executors.newFixedThreadPool(t);
 
-        Runnable[] runnable = new MapAccess[t];
-        for (int i = 0; i < t; i++) {
-            runnable[i] = new MapAccess(map);
+//        FutureTask[] runTask = new FutureTask[t];
+        Set<Callable<Map>> callables = new HashSet<>();
+        for (int i=0; i<t; i++) {
+            Callable callable = new MapWorker(new MapAccess(map));
+//            runTask[i] = new FutureTask(callable);
+            callables.add(callable);
+//            Thread runThread = new Thread(runTask[i]);
+//            runThread.start();
+        }
+        List<Future<Map>> futures = executorService.invokeAll(callables, m, TimeUnit.SECONDS);
+        for (Future<Map> future: futures) {
+            System.out.println(future.get());
         }
 
-        Thread[] thread = new Thread[t];
-        for (int i = 0; i < t; i++) {
-            thread[i] = new Thread(runnable[i]);
-        }
-
-        for (int i = 0; i < t; i++) {
-            thread[i].start();
-        }
-
-
-//        executorService.shutdown();
-//        while (!executorService.isTerminated()) {
+//
+//        executorService.invokeAll(runTask,m,TimeUnit.SECONDS);
+//        for (int i=0; i<t; i++) {
+//            System.out.println(runTask[1].get());
 //        }
+
+//        Thread[] thread = new Thread[t];
+//        for (int i = 0; i < t; i++) {
+//            thread[i] = new Thread(new MapAccess(map));
+//        }
+//
+//        for (int i = 0; i < t; i++) {
+//            thread[i].start();
+//        }
+
+
+
+        executorService.shutdown();
+        while (!executorService.isTerminated()) {
+        }
 
     }
 

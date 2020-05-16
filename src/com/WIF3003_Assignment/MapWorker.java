@@ -1,6 +1,9 @@
 package com.WIF3003_Assignment;
 
-public class MapWorker implements Runnable {
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+public class MapWorker implements Callable<Map> {
 
     MapAccess mapAccess;
 
@@ -9,14 +12,18 @@ public class MapWorker implements Runnable {
     }
 
     @Override
-    public void run() {
-        try {
-            Thread.sleep(100);
-            mapAccess.createEdge();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public Map call() throws Exception {
+        while (MapAccess.getIsRunning() && !MapAccess.getIsInteruppted()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                System.out.println("Thread was interrupted, Timeout");
+                MapAccess.setIsInteruppted(true);
+                return this.mapAccess.getPairPoint();
+//                e.printStackTrace();
+            }
+            this.mapAccess.createEdge();
         }
-
+        return this.mapAccess.getPairPoint();
     }
-
 }
