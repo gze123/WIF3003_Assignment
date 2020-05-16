@@ -20,36 +20,15 @@ public class Main {
         map = generateUniquePoint(n);
         ExecutorService executorService = Executors.newFixedThreadPool(t);
 
-//        FutureTask[] runTask = new FutureTask[t];
         Set<Callable<Map>> callables = new HashSet<>();
         for (int i=0; i<t; i++) {
             Callable callable = new MapWorker(new MapAccess(map));
-//            runTask[i] = new FutureTask(callable);
             callables.add(callable);
-//            Thread runThread = new Thread(runTask[i]);
-//            runThread.start();
         }
         List<Future<Map>> futures = executorService.invokeAll(callables, m, TimeUnit.SECONDS);
         for (Future<Map> future: futures) {
             System.out.println(future.get());
         }
-
-//
-//        executorService.invokeAll(runTask,m,TimeUnit.SECONDS);
-//        for (int i=0; i<t; i++) {
-//            System.out.println(runTask[1].get());
-//        }
-
-//        Thread[] thread = new Thread[t];
-//        for (int i = 0; i < t; i++) {
-//            thread[i] = new Thread(new MapAccess(map));
-//        }
-//
-//        for (int i = 0; i < t; i++) {
-//            thread[i].start();
-//        }
-
-
 
         executorService.shutdown();
         while (!executorService.isTerminated()) {
