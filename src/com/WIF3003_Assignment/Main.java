@@ -1,20 +1,14 @@
 package com.WIF3003_Assignment;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class Main {
 
     private static final Random random = new Random();
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
-        Map<Integer, Point> map = new HashMap<Integer, Point>();
+        HashMap<Integer, Point> map = new HashMap<Integer, Point>();
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter number of points you want to create, n: ");
@@ -23,29 +17,44 @@ public class Main {
         int t = scanner.nextInt();
         System.out.print("Enter the time you want the program to run, m (in second): ");
         long m = scanner.nextLong();
-        long currentTime = System.currentTimeMillis();
-        long endTime = currentTime + (m*1000);
         map = generateUniquePoint(n);
-        MapAccess mapAccess = new MapAccess(map, endTime);
-        MapWorker mapWorker = new MapWorker(mapAccess);
+        MapAccess mapAccess = new MapAccess();
         ExecutorService executorService = Executors.newFixedThreadPool(t);
-        for (int i = 0; i < t; i++) {
-            executorService.execute(mapWorker);
+        //create worker thread
+        List<MapWorker> tasklist = new ArrayList<>();
+        for (int i = 0 ; i < t ; i++){
+            MapWorker worker = new MapWorker(map,mapAccess);
+            tasklist.add(worker);
         }
+        //run worker thread
+        List<Future<MapWorker>> resultlist = null;
+        try {
+            resultlist = executorService.invokeAll(tasklist, m, TimeUnit.SECONDS);
+        }catch (InterruptedException e) {
+            System.out.println("something wrong..." + e);
+        }
+        executorService.shutdown();
 
         executorService.shutdown();
         while (!executorService.isTerminated()) {
         }
+        for (int i = 0; i < resultlist.size() ; i++){
+            Future<MapWorker> future = resultlist.get(i);
+            try {
+                String result = future.get().getResult();
+                System.out.println(result);
+            }catch(InterruptedException | ExecutionException | CancellationException e){
+                System.out.println("Time out! Cancel the running thread(s). With " + e);
+            }
+        }
 
-        System.out.println("Final result: " + mapAccess.getPairPoint());
-        System.out.println(mapAccess.getPairPoint().size());
-        System.out.println("Fail to pair point: " + mapAccess.getUnpairPoint());
-        System.out.println(mapAccess.getUnpairPoint().size());
+        System.out.println("Final result (successful pair: "+mapAccess.getPairPoint().size()+"): " + mapAccess.getPairPoint());
+        System.out.println("Fail to pair point ("+mapAccess.getUnpairPoint().size()+" points): " + mapAccess.getUnpairPoint());
 
     }
 
-    private static Map generateUniquePoint(int n) {
-        Map<Integer, Point> map = new HashMap<Integer, Point>();
+    private static HashMap generateUniquePoint(int n) {
+        HashMap<Integer, Point> map = new HashMap<Integer, Point>();
         for (int i = 0; i < n; i++) {
             Point point = generateRandomPoint();
             while (map.containsValue(point)) {
@@ -56,9 +65,10 @@ public class Main {
         return map;
     }
 
+    //generate 3 d.p points
     private static Point generateRandomPoint() {
-        double x = random.nextDouble() * 1000;
-        double y = random.nextDouble() * 1000;
+        double x = Math.round(random.nextDouble() * 1000000) / 1000.000;//to 3d.p.
+        double y = Math.round(random.nextDouble() * 1000000) / 1000.000;//to 3d.p.
         return new Point(x, y);
     }
 }

@@ -1,7 +1,5 @@
 package com.WIF3003_Assignment;
 
-import java.util.Objects;
-
 public class Point {
 
     double x;
@@ -14,15 +12,11 @@ public class Point {
     }
 
     public boolean isSelected() {
-        synchronized (this){
             return isSelected;
-        }
     }
 
     public void setSelected(boolean selected) {
-        synchronized (this) {
             isSelected = selected;
-        }
     }
 
     public double getX() {
@@ -50,9 +44,15 @@ public class Point {
                 Double.compare(point.getY(), getY()) == 0;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getX(), getY());
+    public synchronized boolean lockPoint(){
+        if (isSelected){
+            //already selected or formed edge
+            return false;
+        }else {
+            //select the point
+            this.setSelected(true);
+            return true;
+        }
     }
 
     @Override
