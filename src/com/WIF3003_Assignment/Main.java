@@ -1,7 +1,13 @@
 package com.WIF3003_Assignment;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 
 public class Main {
 
@@ -16,23 +22,25 @@ public class Main {
         System.out.print("Enter number of thread you want to launch (value must be lesser or equal to n), t: ");
         int t = scanner.nextInt();
         System.out.print("Enter the time you want the program to run, m (in second): ");
-        int m = scanner.nextInt();
+        long m = scanner.nextLong();
+        long currentTime = System.currentTimeMillis();
+        long endTime = currentTime + (m*1000);
         map = generateUniquePoint(n);
+        MapAccess mapAccess = new MapAccess(map, endTime);
+        MapWorker mapWorker = new MapWorker(mapAccess);
         ExecutorService executorService = Executors.newFixedThreadPool(t);
-
-        Set<Callable<Map>> callables = new HashSet<>();
-        for (int i=0; i<t; i++) {
-            Callable callable = new MapWorker(new MapAccess(map));
-            callables.add(callable);
-        }
-        List<Future<Map>> futures = executorService.invokeAll(callables, m, TimeUnit.SECONDS);
-        for (Future<Map> future: futures) {
-            System.out.println(future.get());
+        for (int i = 0; i < t; i++) {
+            executorService.execute(mapWorker);
         }
 
         executorService.shutdown();
         while (!executorService.isTerminated()) {
         }
+
+        System.out.println("Final result: " + mapAccess.getPairPoint());
+        System.out.println(mapAccess.getPairPoint().size());
+        System.out.println("Fail to pair point: " + mapAccess.getUnpairPoint());
+        System.out.println(mapAccess.getUnpairPoint().size());
 
     }
 
