@@ -1,5 +1,7 @@
 package com.WIF3003_Assignment;
 
+import com.WIF3003_Assignment.object.Point;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
