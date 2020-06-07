@@ -5,10 +5,11 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.effect.Glow;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.Line;
@@ -18,16 +19,17 @@ import javafx.util.Duration;
 import main.java.model.GameLogic;
 import main.java.object.GameSetting;
 import main.java.object.Point;
+import main.java.object.ThreadResult;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GameProcessVisualisationController implements Initializable {
     public static Group group = new Group();
     public GameSetting gameSetting;
     GameLogic gameLogic;
-//    public GameLogic gameLogic;
-//    SettingModel settingModel = new SettingModel();
     Stage stage;
 
     public void initData(GameSetting gameSetting, Stage stage) {
@@ -35,48 +37,61 @@ public class GameProcessVisualisationController implements Initializable {
         this.gameSetting = gameSetting;
     }
 
-    public void startGame(){
+    public void startGame() throws InterruptedException{
         group = new Group();
-        Scene scene = new Scene(group,700,700, Color.WHITE);
+        Scene scene = new Scene(group, 700, 700, Color.WHITE);
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.centerOnScreen();
-//        stage.setResizable(false);
+        stage.setResizable(false);
         GameLogic gameLogic = new GameLogic();
 
         new Thread(
                 () -> {
-                    gameLogic.initGame(this,gameSetting);
+                    gameLogic.initGame(this, gameSetting);
                 }
         ).start();
     }
 
-    public void drawPoints(Point point){
-//        System.out.println(point.getX());
+    public void showResult(List<ThreadResult> threadResult) {
+        Platform.runLater(() -> {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/main/resources/view/GameResult.fxml"));
+            try {
+                GameResultController gameResultController = loader.getController();
+                gameResultController.printResult(threadResult);
+                Pane resultScreen = loader.load();
+                final Group group = new Group(resultScreen);
+                stage.setScene(new Scene(group, 1920, 1080));
+                stage.setTitle("Result");
+                stage.show();
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void drawPoints(Point point) {
         Sphere sphere = new Sphere();
         sphere.setRadius(5);
-        sphere.setTranslateX((point.getX()/1000*1920));
-        sphere.setTranslateY((point.getY()/1000*1080));
+        sphere.setTranslateX((point.getX() / 1000 * 1920));
+        sphere.setTranslateY((point.getY() / 1000 * 1080));
         sphere.setCullFace(CullFace.FRONT);
-        Glow glow = new Glow();
-        glow.setLevel(0.9);
-        sphere.setEffect(glow);
         Platform.runLater(() -> {
             group.getChildren().add(sphere);
         });
     }
 
-    public void drawLine(Point point1,Point point2, Color color) {
-        Line line = new Line();
-        line.setStartX((point1.getX()/1000*1920));
-        line.setEndX((point1.getX()/1000*1920));
-        line.setStartY((point1.getY()/1000*1080));
-        line.setEndY((point1.getY()/1000*1080));
-        line.setStroke(color);
-        Glow glow = new Glow();
-        glow.setLevel(0.9);
-        line.setEffect(glow);
-        line.setStrokeWidth(2);
+    public void drawLine(Point point1, Point point2, Color color) {
+        double point1_X = point1.getX() / 1000 * 1920;
+        double point1_Y = point1.getY() / 1000 * 1080;
+        double point2_X = point2.getX() / 1000 * 1920;
+        double point2_Y = point2.getY() / 1000 * 1080;
+        Line line = new Line(point1_X, point1_Y, point1_X, point1_Y);
+        line.setStroke(color.darker());
+        line.setStrokeWidth(1);
         Platform.runLater(() -> {
             group.getChildren().add(line);
             Timeline timeline = new Timeline(
@@ -84,12 +99,12 @@ public class GameProcessVisualisationController implements Initializable {
                             Duration.seconds(1),
                             new KeyValue(
                                     line.endXProperty(),
-                                    (point2.getX()/1000*1920),
+                                    point2_X,
                                     Interpolator.LINEAR
                             ),
                             new KeyValue(
                                     line.endYProperty(),
-                                    (point2.getY()/1000*1080),
+                                    point2_Y,
                                     Interpolator.LINEAR
                             )
                     )

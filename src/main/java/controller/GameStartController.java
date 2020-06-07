@@ -2,9 +2,7 @@ package main.java.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -63,13 +61,9 @@ public class GameStartController {
                         FXMLLoader loader = new FXMLLoader();
                         loader.setLocation(getClass().getResource("/main/resources/view/GameProcessVisualisation.fxml"));
                         Parent root = loader.load();
-//                        Scene gameProcessVisualisationScene = new Scene(root);
                         GameProcessVisualisationController controller = loader.getController();
-//                        Stage window = (Stage)((Node)mouseEvent.getSource()).getScene().getWindow();
                         controller.initData(gameSetting,(Stage)inputTimeLimit.getScene().getWindow());
                         controller.startGame();
-//                        window.setScene(gameProcessVisualisationScene);
-//                        window.show();
                 }
 
         }
