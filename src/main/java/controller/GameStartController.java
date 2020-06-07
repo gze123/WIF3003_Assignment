@@ -63,13 +63,13 @@ public class GameStartController {
                         FXMLLoader loader = new FXMLLoader();
                         loader.setLocation(getClass().getResource("/main/resources/view/GameProcessVisualisation.fxml"));
                         Parent root = loader.load();
-                        Scene gameProcessVisualisationScene = new Scene(root);
+//                        Scene gameProcessVisualisationScene = new Scene(root);
                         GameProcessVisualisationController controller = loader.getController();
-                        controller.initData(gameSetting);
-                        Stage window = (Stage)((Node)mouseEvent.getSource()).getScene().getWindow();
-
-                        window.setScene(gameProcessVisualisationScene);
-                        window.show();
+//                        Stage window = (Stage)((Node)mouseEvent.getSource()).getScene().getWindow();
+                        controller.initData(gameSetting,(Stage)inputTimeLimit.getScene().getWindow());
+                        controller.startGame();
+//                        window.setScene(gameProcessVisualisationScene);
+//                        window.show();
                 }
 
         }

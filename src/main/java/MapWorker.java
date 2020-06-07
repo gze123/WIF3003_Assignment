@@ -1,5 +1,7 @@
 package main.java;
 
+import javafx.scene.paint.Color;
+import main.java.controller.GameProcessVisualisationController;
 import main.java.object.Point;
 
 import java.util.HashMap;
@@ -15,8 +17,9 @@ public class MapWorker implements Callable<MapWorker> {
     private int numberOfEdgeFormed = 0;
     private int attempt = 0;
     private String result;
-
-    public MapWorker(HashMap<Integer, Point> map, MapAccess mapAccess) {
+    GameProcessVisualisationController controller;
+    public MapWorker(GameProcessVisualisationController controller,HashMap<Integer, Point> map, MapAccess mapAccess) {
+        this.controller = controller;
         this.map = map;
         this.mapAccess = mapAccess;
     }
@@ -29,6 +32,7 @@ public class MapWorker implements Callable<MapWorker> {
         return numberOfEdgeFormed;
     }
 
+
     public MapWorker call() throws Exception {
         Point point_1 = null;
         Point point_2 = null;
@@ -36,10 +40,11 @@ public class MapWorker implements Callable<MapWorker> {
         int num2 = 0;
 
         try {
-            Thread.sleep(1);
+
             while (mapAccess.getIsRunning() &&
                     (this.map.get(num1).isSelected() || map.get(num2).isSelected() || (point_1 == null && point_2 == null))
                     && attempt <= 20) {
+                Thread.sleep(200);
                 //get two random point, if already lock one point hold it to avoid release a isSelected point
                 if (point_1 == null) {
                     num1 = random.nextInt(map.size());
@@ -60,6 +65,8 @@ public class MapWorker implements Callable<MapWorker> {
                 if ( (point_1 != null && point_2 != null) && this.mapAccess.getIsRunning() ) {
                     //form edge with the two locked point in this thread
                     this.mapAccess.addCreatedEdge(point_1, point_2);
+                    controller.drawLine(point_1,point_2, Color.BLUE);
+
                     numberOfEdgeFormed++;
                     //release after create edge
 //                    System.out.println(Thread.currentThread().getName() + " Created edge and release: " + point_1 + point_2);
