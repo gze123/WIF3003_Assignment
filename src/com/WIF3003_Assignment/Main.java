@@ -1,13 +1,21 @@
 package com.WIF3003_Assignment;
 
+import javafx.application.Application;
+
 import java.util.*;
 import java.util.concurrent.*;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
-public class Main {
+public class Main extends Application{
 
     private static final Random random = new Random();
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
+        Application.launch(Main.class);
         HashMap<Integer, Point> map = new HashMap<Integer, Point>();
 
         Scanner scanner = new Scanner(System.in);
@@ -70,5 +78,14 @@ public class Main {
         double x = Math.round(random.nextDouble() * 1000000) / 1000.000;//to 3d.p.
         double y = Math.round(random.nextDouble() * 1000000) / 1000.000;//to 3d.p.
         return new Point(x, y);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("Game Menu");
+        Pane root = FXMLLoader.load(getClass().getResource("/interface/GameStart.fxml"));
+        primaryStage.setScene(new Scene(root));
+        primaryStage.show();
+
     }
 }
