@@ -1,4 +1,4 @@
-package com.WIF3003_Assignment.controller;
+package main.java.controller;
 
 public class GameProcessVisualisationController {
 }

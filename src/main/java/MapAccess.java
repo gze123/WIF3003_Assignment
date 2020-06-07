@@ -1,4 +1,4 @@
-package com.WIF3003_Assignment;
+package main.java;
 
 import java.util.ArrayList;
 import java.util.HashMap;

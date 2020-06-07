@@ -1,14 +1,13 @@
-package com.WIF3003_Assignment;
+package main.java;
 
-import javafx.application.Application;
-
-import java.util.*;
-import java.util.concurrent.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 public class Main extends Application{
 
@@ -83,9 +82,8 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Game Menu");
-        Pane root = FXMLLoader.load(getClass().getResource("/interface/GameStart.fxml"));
+        Pane root = FXMLLoader.load(getClass().getResource("/main/resources/view/GameStart.fxml"));
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-
     }
 }

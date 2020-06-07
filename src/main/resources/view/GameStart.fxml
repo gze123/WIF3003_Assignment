@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" style="-fx-background-image: url(&quot;https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTLFWP81FBdiOkM0isRUC9wlGECx3CenI_WPYa-cuCwz58CGywz&amp;usqp=CAU&quot;); -fx-background-repeat: ; -fx-background-size: cover;" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.WIF3003_Assignment.controller.GameStartController">
+<GridPane xmlns:fx="http://javafx.com/fxml/1" hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" style="-fx-background-image: url(&quot;https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTLFWP81FBdiOkM0isRUC9wlGECx3CenI_WPYa-cuCwz58CGywz&amp;usqp=CAU&quot;); -fx-background-repeat: ; -fx-background-size: cover;" vgap="10.0" xmlns="http://javafx.com/javafx/8" fx:controller="main.java.controller.GameStartController">
     <columnConstraints>
         <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="200.0" minWidth="-Infinity" prefWidth="144.0" />
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="247.0" minWidth="10.0" prefWidth="144.0" />
