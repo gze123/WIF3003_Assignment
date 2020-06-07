@@ -1,20 +1,19 @@
-package main.java;
+package main.java.model;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
+import main.java.MapAccess;
+import main.java.MapWorker;
+import main.java.controller.GameProcessVisualisationController;
+import main.java.object.GameSetting;
+import main.java.object.Point;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-public class Main extends Application{
+public class GameLogic{
 
     private static final Random random = new Random();
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
-        Application.launch(Main.class);
         HashMap<Integer, Point> map = new HashMap<Integer, Point>();
 
         Scanner scanner = new Scanner(System.in);
@@ -23,20 +22,27 @@ public class Main extends Application{
         System.out.print("Enter number of thread you want to launch (value must be lesser or equal to n), t: ");
         int t = scanner.nextInt();
         System.out.print("Enter the time you want the program to run, m (in second): ");
-        long m = scanner.nextLong();
-        map = generateUniquePoint(n);
+        int m = scanner.nextInt();
+        GameSetting gameSetting = new GameSetting(n, t, m);
+        GameLogic gameLogic = new GameLogic();
+        gameLogic.initGame(null, gameSetting);
+    }
+
+    public void initGame(GameProcessVisualisationController gameProcessVisualisationController, GameSetting gameSetting) {
+        HashMap<Integer, Point> map = new HashMap<Integer, Point>();
+        map = generateUniquePoint(gameSetting.getNumberOfPoint());
         MapAccess mapAccess = new MapAccess();
-        ExecutorService executorService = Executors.newFixedThreadPool(t);
+        ExecutorService executorService = Executors.newFixedThreadPool(gameSetting.getNumberOfThread());
         //create worker thread
         List<MapWorker> tasklist = new ArrayList<>();
-        for (int i = 0 ; i < t ; i++){
+        for (int i = 0 ; i < gameSetting.getNumberOfThread(); i++){
             MapWorker worker = new MapWorker(map,mapAccess);
             tasklist.add(worker);
         }
         //run worker thread
         List<Future<MapWorker>> resultlist = null;
         try {
-            resultlist = executorService.invokeAll(tasklist, m, TimeUnit.SECONDS);
+            resultlist = executorService.invokeAll(tasklist, gameSetting.getTimeLimit(), TimeUnit.SECONDS);
         }catch (InterruptedException e) {
             System.out.println("something wrong..." + e);
         }
@@ -57,7 +63,6 @@ public class Main extends Application{
 
         System.out.println("Final result (successful pair: "+mapAccess.getPairPoint().size()+"): " + mapAccess.getPairPoint());
         System.out.println("Fail to pair point ("+mapAccess.getUnpairPoint().size()+" points): " + mapAccess.getUnpairPoint());
-
     }
 
     private static HashMap generateUniquePoint(int n) {
@@ -77,13 +82,5 @@ public class Main extends Application{
         double x = Math.round(random.nextDouble() * 1000000) / 1000.000;//to 3d.p.
         double y = Math.round(random.nextDouble() * 1000000) / 1000.000;//to 3d.p.
         return new Point(x, y);
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Game Menu");
-        Pane root = FXMLLoader.load(getClass().getResource("/main/resources/view/GameStart.fxml"));
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
     }
 }

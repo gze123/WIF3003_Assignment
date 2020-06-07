@@ -1,5 +1,7 @@
 package main.java;
 
+import main.java.object.Point;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
