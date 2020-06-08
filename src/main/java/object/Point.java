@@ -1,4 +1,4 @@
-package com.WIF3003_Assignment.object;
+package main.java.object;
 
 public class Point {
 
@@ -12,11 +12,11 @@ public class Point {
     }
 
     public boolean isSelected() {
-        return isSelected;
+            return isSelected;
     }
 
     public void setSelected(boolean selected) {
-        isSelected = selected;
+            isSelected = selected;
     }
 
     public double getX() {

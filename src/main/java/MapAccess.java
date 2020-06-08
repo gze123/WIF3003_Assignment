@@ -1,4 +1,6 @@
-package com.WIF3003_Assignment;
+package main.java;
+
+import main.java.object.Point;
 
 import com.WIF3003_Assignment.object.Point;
 

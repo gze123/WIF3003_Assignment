@@ -1,4 +1,9 @@
-package com.WIF3003_Assignment;
+package main.java;
+
+import javafx.scene.paint.Color;
+import main.java.controller.GameProcessVisualisationController;
+import main.java.object.Point;
+import main.java.object.ThreadResult;
 
 import com.WIF3003_Assignment.object.Point;
 
@@ -6,7 +11,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-public class MapWorker implements Callable<MapWorker> {
+public class MapWorker implements Callable<ThreadResult> {
 
     MapAccess mapAccess;
     HashMap<Integer, Point> map;
@@ -15,10 +20,14 @@ public class MapWorker implements Callable<MapWorker> {
     private int numberOfEdgeFormed = 0;
     private int attempt = 0;
     private String result;
-
-    public MapWorker(HashMap<Integer, Point> map, MapAccess mapAccess) {
+    Color color;
+    private ThreadResult threadResult;
+    GameProcessVisualisationController controller;
+    public MapWorker(GameProcessVisualisationController controller,HashMap<Integer, Point> map, MapAccess mapAccess, Color color) {
+        this.controller = controller;
         this.map = map;
         this.mapAccess = mapAccess;
+        this.color = color;
     }
 
     public String getResult() {
@@ -29,17 +38,20 @@ public class MapWorker implements Callable<MapWorker> {
         return numberOfEdgeFormed;
     }
 
-    public MapWorker call() throws Exception {
+
+    public ThreadResult call() throws Exception {
+        ThreadResult threadResult = new ThreadResult();
+        threadResult.setName(Thread.currentThread().getName());
         Point point_1 = null;
         Point point_2 = null;
         int num1 = 0;
         int num2 = 0;
 
         try {
-            Thread.sleep(1);
             while (mapAccess.getIsRunning() &&
                     (this.map.get(num1).isSelected() || map.get(num2).isSelected() || (point_1 == null && point_2 == null))
                     && attempt <= 20) {
+                Thread.sleep(200);
                 //get two random point, if already lock one point hold it to avoid release a isSelected point
                 if (point_1 == null) {
                     num1 = random.nextInt(map.size());
@@ -60,6 +72,8 @@ public class MapWorker implements Callable<MapWorker> {
                 if ( (point_1 != null && point_2 != null) && this.mapAccess.getIsRunning() ) {
                     //form edge with the two locked point in this thread
                     this.mapAccess.addCreatedEdge(point_1, point_2);
+                    controller.drawLine(point_1,point_2, this.color);
+
                     numberOfEdgeFormed++;
                     //release after create edge
 //                    System.out.println(Thread.currentThread().getName() + " Created edge and release: " + point_1 + point_2);
@@ -88,7 +102,9 @@ public class MapWorker implements Callable<MapWorker> {
             }
             result = "More than 20 attempt, " + Thread.currentThread().getName() + " has stop and holding " + anyholding + ". Number of edges by this thread is " + numberOfEdgeFormed
                     + ".\nStop other thread...";
-            return this;
+            threadResult.setNumberOfEdgeCreated(numberOfEdgeFormed);
+            threadResult.setNumberOfFailure(attempt-1);
+            return threadResult;
         } else {
             if (point_1 != null) {
                 anyholding = point_1.toString();
@@ -100,7 +116,9 @@ public class MapWorker implements Callable<MapWorker> {
                 anyholding = point_2.toString();
             }
             result = "The number of edges created by " + Thread.currentThread().getName() + " is " + numberOfEdgeFormed + ", with " + attempt + " attempt(s)";
-            return this;
+            threadResult.setNumberOfEdgeCreated(numberOfEdgeFormed);
+            threadResult.setNumberOfFailure(attempt);
+            return threadResult;
         }
     }
 
