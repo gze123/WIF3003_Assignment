@@ -8,8 +8,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.Line;
@@ -37,7 +37,7 @@ public class GameProcessVisualisationController implements Initializable {
         this.gameSetting = gameSetting;
     }
 
-    public void startGame() throws InterruptedException{
+    public void startGame() {
         group = new Group();
         Scene scene = new Scene(group, 700, 700, Color.WHITE);
         stage.setScene(scene);
@@ -48,25 +48,27 @@ public class GameProcessVisualisationController implements Initializable {
 
         new Thread(
                 () -> {
-                    gameLogic.initGame(this, gameSetting);
+                    try {
+                        gameLogic.initGame(this, gameSetting);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
         ).start();
     }
 
     public void showResult(List<ThreadResult> threadResult) {
         Platform.runLater(() -> {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/main/resources/view/GameResult.fxml"));
+
             try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/resources/view/GameResult.fxml"));
+                Parent gameResultParent = loader.load();
                 GameResultController gameResultController = loader.getController();
-                gameResultController.printResult(threadResult);
-                Pane resultScreen = loader.load();
-                final Group group = new Group(resultScreen);
-                stage.setScene(new Scene(group, 1920, 1080));
-                stage.setTitle("Result");
-                stage.show();
-
-
+                gameResultController.printResult(threadResult, (Stage) stage.getScene().getWindow());
+                Scene gameResultScene= new Scene(gameResultParent);
+                Stage window = (Stage)(this.stage.getScene().getWindow());
+                window.setScene(gameResultScene);
+                window.show();
             } catch (IOException e) {
                 e.printStackTrace();
             }
