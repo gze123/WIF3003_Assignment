@@ -62,13 +62,15 @@ public class GameLogic {
             tasklist.add(worker);
         }
 
+        executorService.invokeAll(tasklist,gameSetting.getTimeLimit(),TimeUnit.SECONDS);
+
         //run worker thread
-        List<Future<EdgeWorker>> resultList = null;
-        try {
-            resultList = executorService.invokeAll(tasklist, gameSetting.getTimeLimit(), TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            System.out.println("something wrong..." + e);
-        }
+//        List<Future<EdgeWorker>> resultList = null;
+//        try {
+//            resultList = executorService.invokeAll(tasklist, gameSetting.getTimeLimit(), TimeUnit.SECONDS);
+//        } catch (InterruptedException e) {
+//            System.out.println("something wrong..." + e);
+//        }
         executorService.shutdown();
 
         while (!executorService.isTerminated()) {
@@ -76,15 +78,21 @@ public class GameLogic {
         }
 
         //get results
+//        List<EdgeWorker> threadResultList = new ArrayList<>();
+//        for (int i = 0; i < resultList.size(); i++){
+//            Future<EdgeWorker> future = resultList.get(i);
+//            try{
+//                EdgeWorker result = future.get();
+//                threadResultList.add(result);
+//            }catch (InterruptedException| ExecutionException|CancellationException e){
+//                System.out.println("Time out! Cancel the running thread(s). With " + e);
+//            }
+//        }
+
+        //get results through direct refer
         List<EdgeWorker> threadResultList = new ArrayList<>();
-        for (int i = 0; i < resultList.size(); i++){
-            Future<EdgeWorker> future = resultList.get(i);
-            try{
-                EdgeWorker result = future.get();
-                threadResultList.add(result);
-            }catch (InterruptedException| ExecutionException|CancellationException e){
-                System.out.println("Time out! Cancel the running thread(s). With " + e);
-            }
+        for(int i =0 ; i < tasklist.size() ; i ++){
+            threadResultList.add(tasklist.get(i));
         }
 
         Collections.sort(threadResultList);
