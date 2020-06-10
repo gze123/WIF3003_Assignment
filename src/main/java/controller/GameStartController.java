@@ -44,10 +44,12 @@ public class GameStartController {
                         alert.setHeaderText("Invalid Input");
                         alert.setContentText("Please type again. All field must be filled with integer.");
                         alert.show();
-                } else if (!isNumeric(inputNumberOfPoint.getText()) || !isNumeric(inputNumberOfThread.getText()) || !isNumeric(inputTimeLimit.getText())) {
+                } else if ( (!isNumeric(inputNumberOfPoint.getText()) || (Integer.parseInt(inputNumberOfPoint.getText()) <= 0 ) )||
+                        ( !isNumeric(inputNumberOfThread.getText()) || (Integer.parseInt(inputNumberOfThread.getText()) <= 0) )||
+                        ( !isNumeric(inputTimeLimit.getText())) || (Integer.parseInt(inputTimeLimit.getText()) <= 0) ){
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setHeaderText("Invalid Input");
-                        alert.setContentText("Please type again. Only integer is allowed.");
+                        alert.setContentText("Please type again. Only positive integer is allowed.");
                         alert.show();
                 }
                 else {
@@ -56,7 +58,7 @@ public class GameStartController {
                         int timeLimit = Integer.parseInt(inputTimeLimit.getText());
                         GameSetting gameSetting = new GameSetting(numberOfPoint,numberOfThread,timeLimit);
 
-                        System.out.println(numberOfPoint + " " + numberOfThread +  " " +  timeLimit);
+//                        System.out.println(numberOfPoint + " " + numberOfThread +  " " +  timeLimit);
 
                         FXMLLoader loader = new FXMLLoader();
                         loader.setLocation(getClass().getResource("/main/resources/view/GameProcessVisualisation.fxml"));

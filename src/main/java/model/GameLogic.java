@@ -1,12 +1,12 @@
 package main.java.model;
 
+import com.sun.javafx.geom.Edge;
 import javafx.scene.paint.Color;
-import main.java.MapAccess;
-import main.java.MapWorker;
+import main.java.PairList;
+import main.java.EdgeWorker;
 import main.java.controller.GameProcessVisualisationController;
 import main.java.object.GameSetting;
 import main.java.object.Point;
-import main.java.object.ThreadResult;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -14,33 +14,18 @@ import java.util.concurrent.*;
 public class GameLogic {
     private static final Random random = new Random();
 
-    public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
-        HashMap<Integer, Point> map = new HashMap<Integer, Point>();
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter number of points you want to create, n: ");
-        int n = scanner.nextInt();
-        System.out.print("Enter number of thread you want to launch (value must be lesser or equal to n), t: ");
-        int t = scanner.nextInt();
-        System.out.print("Enter the time you want the program to run, m (in second): ");
-        int m = scanner.nextInt();
-        GameSetting gameSetting = new GameSetting(n, t, m);
-        GameLogic gameLogic = new GameLogic();
-        gameLogic.initGame(null, gameSetting);
-    }
-
     private static HashMap generateUniquePoint(GameProcessVisualisationController controller, int n) {
-        HashMap<Integer, Point> map = new HashMap<Integer, Point>();
+        HashMap<Integer, Point> pointList = new HashMap<>();
         for (int i = 0; i < n; i++) {
             Point point = generateRandomPoint();
-            while (map.containsValue(point)) {
+            while (pointList.containsValue(point)) {
                 point = generateRandomPoint();
             }
             System.out.println(point);
             controller.drawPoints(point);
-            map.put(i, point);
+            pointList.put(i, point);
         }
-
-        return map;
+        return pointList;
     }
 
     private static Color generateRandomColor() {
@@ -58,14 +43,14 @@ public class GameLogic {
         return new Point(x, y);
     }
 
-    public void initGame(GameProcessVisualisationController gameProcessVisualisationController, GameSetting gameSetting) throws InterruptedException {
-        HashMap<Integer, Point> map = new HashMap<Integer, Point>();
-        map = generateUniquePoint(gameProcessVisualisationController, gameSetting.getNumberOfPoint());
-        MapAccess mapAccess = new MapAccess();
+    public  void initGame(GameProcessVisualisationController gameProcessVisualisationController, GameSetting gameSetting) throws InterruptedException {
+        HashMap<Integer, Point> pointList = new HashMap<>();
+        pointList = generateUniquePoint(gameProcessVisualisationController, gameSetting.getNumberOfPoint());
+        PairList pairList = new PairList();
         ExecutorService executorService = Executors.newFixedThreadPool(gameSetting.getNumberOfThread());
+
         //create worker thread
-        List<MapWorker> tasklist = new ArrayList<>();
-        float[] colorRGB = new float[3];
+        List<EdgeWorker> tasklist = new ArrayList<>();
         List<Color> colorList = new ArrayList<>();
         for (int i = 0; i < gameSetting.getNumberOfThread(); i++) {
             Color color = generateRandomColor();
@@ -73,11 +58,12 @@ public class GameLogic {
                 color = generateRandomColor();
             }
             colorList.add(color);
-            MapWorker worker = new MapWorker(gameProcessVisualisationController, map, mapAccess, color);
+            EdgeWorker worker = new EdgeWorker(gameProcessVisualisationController, pointList, pairList, color);
             tasklist.add(worker);
         }
+
         //run worker thread
-        List<Future<ThreadResult>> resultList = null;
+        List<Future<EdgeWorker>> resultList = null;
         try {
             resultList = executorService.invokeAll(tasklist, gameSetting.getTimeLimit(), TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -85,28 +71,26 @@ public class GameLogic {
         }
         executorService.shutdown();
 
-        executorService.shutdown();
         while (!executorService.isTerminated()) {
+            //wait thread finish
         }
 
-        List<ThreadResult> threadResultList = new ArrayList<>();
-        for (int i = 0; i < resultList.size(); i++) {
-            Future<ThreadResult> future = resultList.get(i);
-            try {
-                ThreadResult result = future.get();
+        //get results
+        List<EdgeWorker> threadResultList = new ArrayList<>();
+        for (int i = 0; i < resultList.size(); i++){
+            Future<EdgeWorker> future = resultList.get(i);
+            try{
+                EdgeWorker result = future.get();
                 threadResultList.add(result);
-            } catch (InterruptedException | ExecutionException | CancellationException e) {
+            }catch (InterruptedException| ExecutionException|CancellationException e){
                 System.out.println("Time out! Cancel the running thread(s). With " + e);
             }
         }
 
         Collections.sort(threadResultList);
-        System.out.println(threadResultList.toString());
+        pairList.print();
 
-        System.out.println("Final result (successful pair: " + mapAccess.getPairPoint().size() + "): " + mapAccess.getPairPoint());
-        System.out.println("Fail to pair point (" + mapAccess.getUnpairPoint().size() + " points): " + mapAccess.getUnpairPoint());
-
-        Thread.sleep(2000);
+        Thread.sleep(3000);//hold for a while before go to result scene
 
         if (gameProcessVisualisationController != null) {
             gameProcessVisualisationController.showResult(threadResultList);
