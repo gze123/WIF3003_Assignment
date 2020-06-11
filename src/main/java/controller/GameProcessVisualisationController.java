@@ -60,13 +60,13 @@ public class GameProcessVisualisationController implements Initializable {
         ).start();
     }
 
-    public void showResult(List<EdgeWorker> threadResult) {
+    public void showResult(List<EdgeWorker> threadResult, boolean timeout) {
         Platform.runLater(() -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/resources/view/GameResult.fxml"));
                 Parent gameResultParent = loader.load();
                 GameResultController gameResultController = loader.getController();
-                gameResultController.printResult(threadResult, (Stage) stage.getScene().getWindow());
+                gameResultController.printResult(threadResult, (Stage) stage.getScene().getWindow(), timeout);
                 Scene gameResultScene= new Scene(gameResultParent);
                 Stage window = (Stage)(this.stage.getScene().getWindow());
                 window.setScene(gameResultScene);
