@@ -47,6 +47,7 @@ public class GameLogic {
         HashMap<Integer, Point> pointList = new HashMap<>();
         pointList = generateUniquePoint(gameProcessVisualisationController, gameSetting.getNumberOfPoint());
         PairList pairList = new PairList();
+        boolean timeout = false;
         ExecutorService executorService = Executors.newFixedThreadPool(gameSetting.getNumberOfThread());
 
         //create worker thread
@@ -62,6 +63,8 @@ public class GameLogic {
             tasklist.add(worker);
         }
 
+//        executorService.invokeAll(tasklist,gameSetting.getTimeLimit(),TimeUnit.SECONDS);
+
         //run worker thread
         List<Future<EdgeWorker>> resultList = null;
         try {
@@ -75,16 +78,23 @@ public class GameLogic {
             //wait thread finish
         }
 
-        //get results
-        List<EdgeWorker> threadResultList = new ArrayList<>();
+        //check timeout
+        List<EdgeWorker> temp = new ArrayList<>();
         for (int i = 0; i < resultList.size(); i++){
             Future<EdgeWorker> future = resultList.get(i);
             try{
                 EdgeWorker result = future.get();
-                threadResultList.add(result);
+                temp.add(result);
             }catch (InterruptedException| ExecutionException|CancellationException e){
+                timeout = true;
                 System.out.println("Time out! Cancel the running thread(s). With " + e);
             }
+        }
+
+        //get results through direct refer
+        List<EdgeWorker> threadResultList = new ArrayList<>();
+        for(int i =0 ; i < tasklist.size() ; i ++){
+            threadResultList.add(tasklist.get(i));
         }
 
         Collections.sort(threadResultList);
@@ -93,7 +103,7 @@ public class GameLogic {
         Thread.sleep(3000);//hold for a while before go to result scene
 
         if (gameProcessVisualisationController != null) {
-            gameProcessVisualisationController.showResult(threadResultList);
+            gameProcessVisualisationController.showResult(threadResultList, timeout);
         }
 
     }
