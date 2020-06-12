@@ -33,8 +33,8 @@ public class GameProcessVisualisationController implements Initializable {
 
     //scale to 75% of the screen
     Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
-    private double screenHeight = screensize.getHeight() * 75 /100;
-    private double screenWidth = screensize.getWidth() *75 /100;
+    private final double screenHeight = screensize.getHeight() * 75 / 100;
+    private final double screenWidth = screensize.getWidth() * 75 / 100;
 
     public void initData(GameSetting gameSetting, Stage stage) {
         this.stage = stage;
@@ -67,9 +67,10 @@ public class GameProcessVisualisationController implements Initializable {
                 Parent gameResultParent = loader.load();
                 GameResultController gameResultController = loader.getController();
                 gameResultController.printResult(threadResult, (Stage) stage.getScene().getWindow(), timeout);
-                Scene gameResultScene= new Scene(gameResultParent);
-                Stage window = (Stage)(this.stage.getScene().getWindow());
+                Scene gameResultScene = new Scene(gameResultParent, screenWidth * 2 / 3 , screenHeight * 2 / 3);
+                Stage window = (Stage) (this.stage.getScene().getWindow());
                 window.setScene(gameResultScene);
+                window.centerOnScreen();
                 window.show();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -78,7 +79,7 @@ public class GameProcessVisualisationController implements Initializable {
     }
 
     public void drawPoints(Point point) {
-        Circle circle = new Circle(point.getX()/1000 *screenWidth, point.getY()/1000*screenHeight,3);
+        Circle circle = new Circle(point.getX() / 1000 * screenWidth, point.getY() / 1000 * screenHeight, 3);
         Platform.runLater(() -> {
             group.getChildren().add(circle);
         });
@@ -95,9 +96,9 @@ public class GameProcessVisualisationController implements Initializable {
         Platform.runLater(() -> {
             group.getChildren().add(line);
             Timeline timeline = new Timeline();
-            KeyValue kv1 = new KeyValue(line.endXProperty(),point2_X,Interpolator.LINEAR);
-            KeyValue kv2 = new KeyValue(line.endYProperty(),point2_Y,Interpolator.LINEAR);
-            KeyFrame kf = new KeyFrame(Duration.seconds(1),kv1,kv2);
+            KeyValue kv1 = new KeyValue(line.endXProperty(), point2_X, Interpolator.LINEAR);
+            KeyValue kv2 = new KeyValue(line.endYProperty(), point2_Y, Interpolator.LINEAR);
+            KeyFrame kf = new KeyFrame(Duration.seconds(1), kv1, kv2);
             timeline.getKeyFrames().add(kf);
             timeline.play();
         });

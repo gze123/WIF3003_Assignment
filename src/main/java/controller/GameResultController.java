@@ -37,7 +37,7 @@ public class GameResultController {
         ObservableList result = FXCollections.observableArrayList();
         String resultView = "";
         if (timeout){
-            result.add("Timeout for this run! Threads are stop without more than 20 attemps");
+            result.add("Timeout! Threads are stop due to time limit");
         }
         for (int i = 0; i < threadResults.size(); i++) {
             resultView = (i+1) + ". " + threadResults.get(i).getName() + " Number of Edge Created: " + threadResults.get(i).getNumberOfEdgeFormed() + " Number of Failure: " + threadResults.get(i).getAttempt() + "\n";
