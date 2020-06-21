@@ -48,13 +48,10 @@ public class GameResultController {
 
     public void restartGame(javafx.scene.input.MouseEvent mouseEvent) {
         Platform.runLater(() -> {
-//            stage = new Stage();
-//            stage.setTitle("Game Menu");
             Pane root = null;
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/main/resources/view/GameStart.fxml"));
                 root = loader.load();
-                GameStartController gameStartController = loader.getController();
                 Scene gameStartScene = new Scene(root);
                 Stage window = (Stage)(this.stage.getScene().getWindow());
                 window.setScene(gameStartScene);
@@ -63,8 +60,6 @@ public class GameResultController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            stage.setScene(new Scene(root));
-//            stage.show();
         });
     }
 }

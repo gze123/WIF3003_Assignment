@@ -58,7 +58,6 @@ public class GameStartController {
                         int timeLimit = Integer.parseInt(inputTimeLimit.getText());
                         GameSetting gameSetting = new GameSetting(numberOfPoint,numberOfThread,timeLimit);
 
-//                        System.out.println(numberOfPoint + " " + numberOfThread +  " " +  timeLimit);
 
                         FXMLLoader loader = new FXMLLoader();
                         loader.setLocation(getClass().getResource("/main/resources/view/GameProcessVisualisation.fxml"));

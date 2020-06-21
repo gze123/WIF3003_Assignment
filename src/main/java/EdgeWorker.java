@@ -20,7 +20,6 @@ public class EdgeWorker implements Callable<EdgeWorker>,Comparable<EdgeWorker> {
     private String name ;
     Color color;
 
-    //    private ThreadResult threadResult;
     GameProcessVisualisationController controller;
 
     Random random = new Random();

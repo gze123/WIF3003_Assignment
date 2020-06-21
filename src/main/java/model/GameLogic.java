@@ -1,9 +1,8 @@
 package main.java.model;
 
-import com.sun.javafx.geom.Edge;
 import javafx.scene.paint.Color;
-import main.java.PairList;
 import main.java.EdgeWorker;
+import main.java.PairList;
 import main.java.controller.GameProcessVisualisationController;
 import main.java.object.GameSetting;
 import main.java.object.Point;
@@ -63,7 +62,6 @@ public class GameLogic {
             tasklist.add(worker);
         }
 
-//        executorService.invokeAll(tasklist,gameSetting.getTimeLimit(),TimeUnit.SECONDS);
 
         //run worker thread
         List<Future<EdgeWorker>> resultList = null;
@@ -100,7 +98,8 @@ public class GameLogic {
         Collections.sort(threadResultList);
         pairList.print();
 
-        Thread.sleep(3000);//hold for a while before go to result scene
+        //hold for a while before go to result scene
+        Thread.sleep(3000);
 
         if (gameProcessVisualisationController != null) {
             gameProcessVisualisationController.showResult(threadResultList, timeout);
