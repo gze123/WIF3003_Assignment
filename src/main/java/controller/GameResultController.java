@@ -38,6 +38,12 @@ public class GameResultController {
         String resultView = "";
         if (timeout){
             result.add("Timeout! Threads are stop due to time limit");
+        }else {
+            for (int i = 0; i < threadResults.size(); i++){
+                if (threadResults.get(i).getAttempt() >= 20 ){
+                    result.add(threadResults.get(i).getName() + " has reached 20 failed attempts. All threads stopped pairing.");
+                }
+            }
         }
         for (int i = 0; i < threadResults.size(); i++) {
             resultView = (i+1) + ". " + threadResults.get(i).getName() + " Number of Edge Created: " + threadResults.get(i).getNumberOfEdgeFormed() + " Number of Failure: " + threadResults.get(i).getAttempt() + "\n";
